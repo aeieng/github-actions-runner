@@ -3,7 +3,7 @@ FROM ghcr.io/actions/actions-runner:2.316.1
 
 USER root
 
-# install curl, jq, and Azure CLI
+# install curl, jq, Azure CLI, and PostgreSQL client
 RUN apt-get update && \
     apt-get install -y curl jq apt-transport-https lsb-release gnupg && \
     curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg && \
@@ -11,6 +11,10 @@ RUN apt-get update && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list && \
     apt-get update && \
     apt-get install -y azure-cli && \
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
+    apt-get update && \
+    apt-get install -y postgresql-client-16 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
