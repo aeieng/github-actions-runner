@@ -4,6 +4,7 @@ FROM ghcr.io/actions/actions-runner:2.316.1
 USER root
 
 # install curl, jq, Azure CLI, PostgreSQL client, and dnsutils
+# Installs the rdbms-connect az-cli extension to allow az postgres flexible-server connect
 RUN apt-get update && \
     apt-get install -y curl jq apt-transport-https lsb-release gnupg dnsutils && \
     curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg && \
@@ -11,6 +12,7 @@ RUN apt-get update && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list && \
     apt-get update && \
     apt-get install -y azure-cli && \
+    az extension add --name rdbms-connect && \
     curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor > /usr/share/keyrings/postgresql-archive-keyring.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list && \
     apt-get update && \
