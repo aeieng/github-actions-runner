@@ -8,4 +8,4 @@ REGISTRATION_TOKEN="$(curl -X POST -fsSL \
   "$REGISTRATION_TOKEN_API_URL" \
   | jq -r '.token')"
 
-./config.sh --url $GH_URL --token $REGISTRATION_TOKEN --unattended --ephemeral && ./run.sh
+./config.sh --url $GH_URL --token $REGISTRATION_TOKEN --labels $LABELS --unattended --ephemeral && ./run.sh
