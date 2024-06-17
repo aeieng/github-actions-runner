@@ -1,0 +1,25 @@
+name: "Dev"
+
+on:
+  pull_request:
+    paths-ignore:
+      - ".github/workflows/prod.yaml"
+      - "LICENSE"
+      - "README.md"
+
+permissions:
+  id-token: write
+  contents: read # Needed to clone repo
+  actions: read # Potentially needed for private repositories (see https://github.com/github/codeql-action/issues/2117)
+
+jobs:
+  deploy-dev:
+    name: "Dev"
+    uses: ./.github/workflows/publish.yaml
+    with:
+      environment: dev
+      azure_container_registry_name: acrcorecddevcusf4f8
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
