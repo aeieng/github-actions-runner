@@ -1,0 +1,72 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        description: "The name of the cloud environment in github"
+        default: dev
+      azure_container_registry_name:
+        type: string
+        description: "The name of the azure container registry to publish to."
+      docker_file_path:
+        type: string
+        description: "The path to the target Dockerfile to build and publish"
+        default: Dockerfile
+      image_name:
+        type: string
+        description: "The name to publish the image under."
+        default: github-actions
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      GH_BOT_PAT:
+        required: true
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  if:
+
+jobs:
+  build-publish:
+    name: "Build and Publish Image"
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{inputs.environment}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_BOT_PAT }}
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build/Push Image
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az acr build \
+            --registry ${{ inputs.azure_container_registry_name }} \
+            --image ${{inputs.image_name}}:${{ inputs.environment }}${{ github.run_id }} \
+            --file ${{ inputs.docker_file_path }} .
+
+      - name: Build/Push Latest Image
+        if: inputs.environment == 'prod'
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az acr build \
+            --registry ${{ inputs.azure_container_registry_name }} \
+            --image ${{inputs.image_name}}:latest \
+            --file ${{ inputs.docker_file_path }} .
