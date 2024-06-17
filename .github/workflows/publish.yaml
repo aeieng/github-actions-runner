@@ -23,14 +23,12 @@ on:
         required: true
       AZURE_TENANT_ID:
         required: true
-      GH_BOT_PAT:
-        required: true
+
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  if:
-
+  
 jobs:
   build-publish:
     name: "Build and Publish Image"
@@ -40,8 +38,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_BOT_PAT }}
 
       - name: Azure login
         uses: azure/login@v2
