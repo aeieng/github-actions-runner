@@ -8,7 +8,7 @@ USER root
 # - unzip, nodejs: used by hashicorp/setup-terraform
 # Installs the rdbms-connect az-cli extension to allow az postgres flexible-server connect
 RUN apt-get update && \
-    apt-get install -y curl jq apt-transport-https lsb-release gnupg dnsutils unzip nodejs && \
+    apt-get install -y curl jq apt-transport-https lsb-release gnupg dnsutils unzip software-properties-common npm && \
     curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg && \
     AZ_REPO=$(lsb_release -cs) && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list && \
@@ -21,6 +21,10 @@ RUN apt-get update && \
     apt-get install -y postgresql-client-16 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+RUN npm install npm@latest -g && \
+    npm install n -g && \
+    n lts
 
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
