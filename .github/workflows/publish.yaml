@@ -28,7 +28,7 @@ env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  
+
 jobs:
   build-publish:
     name: "Build and Publish Image"
@@ -57,7 +57,7 @@ jobs:
             --file ${{ inputs.docker_file_path }} .
 
       - name: Build/Push Latest Image
-        if: inputs.environment == 'prod'
+        if: inputs.environment == 'prod' || inputs.environment == 'prod'
         uses: azure/cli@v2
         with:
           azcliversion: latest
