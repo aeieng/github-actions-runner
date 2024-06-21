@@ -5,10 +5,10 @@ USER root
 
 # install:
 # - curl, jq, Azure CLI, PostgreSQL client, and dnsutils
-# - unzip: used by hashicorp/setup-terraform
+# - unzip, nodejs: used by hashicorp/setup-terraform
 # Installs the rdbms-connect az-cli extension to allow az postgres flexible-server connect
 RUN apt-get update && \
-    apt-get install -y curl jq apt-transport-https lsb-release gnupg dnsutils unzip && \
+    apt-get install -y curl jq apt-transport-https lsb-release gnupg dnsutils unzip nodejs && \
     curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg && \
     AZ_REPO=$(lsb_release -cs) && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list && \
