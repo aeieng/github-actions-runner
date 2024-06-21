@@ -15,7 +15,7 @@ on:
       image_name:
         type: string
         description: "The name to publish the image under."
-        default: github-actions
+        default: github-actions-runner
     secrets:
       AZURE_CLIENT_ID:
         required: true
