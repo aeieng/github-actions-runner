@@ -9,6 +9,7 @@ on:
       - "LICENSE"
       - "README.md"
   pull_request:
+    types: [opened, reopened, synchronize]
     paths-ignore:
       - ".github/workflows/prod.yaml"
       - "LICENSE"

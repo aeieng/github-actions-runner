@@ -28,7 +28,7 @@ env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-
+  ENV_ID: ${{ github.event_name == 'pull_request' && format('{0}{1}', inputs.environment, github.event.pull_request.number) }}
 jobs:
   build-publish:
     name: "Build and Publish Image"
@@ -57,7 +57,7 @@ jobs:
             --file ${{ inputs.docker_file_path }} .
 
       - name: Build/Push Latest Image
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && github.event != 'pull_request'
         uses: azure/cli@v2
         with:
           azcliversion: latest

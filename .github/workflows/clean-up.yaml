@@ -1,0 +1,61 @@
+name: Clean Up PR Feature Images
+
+on:
+  pull_request:
+    types: [closed]
+
+env:
+  ACR_NAME: acrcorecdprodcus3870
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+jobs:
+  destroy:
+    runs-on: dev
+    environment:
+      name: dev
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Clean ACR
+        env:
+          container_registry_name: ${{env.ACR_NAME}}
+          search_term: ${{ github.event_name == 'pull_request' && format('{0}{1}', 'dev', github.event.pull_request.number) }}
+        run: |
+          # Print the registry name
+          echo $container_registry_name
+
+          # List of repositories in the registry
+          repositories=('project-startup-host' 'design-hub-host' 'create-model-v950-host' 'create-model-v232-host' 'run-model-v950-host' 'run-model-v232-host' 'excel-host')
+
+          # Loop over each repository
+          for repositoryName in "${repositories[@]}"
+          do
+            # Get all tags in the repository
+            tags=$(az acr repository show-tags --name $container_registry_name --repository $repositoryName --output tsv)
+
+            # Loop over each tag
+            for tag in $tags
+            do
+
+              # If the tag starts with the prefix passed as the second argument to the script
+              if [[ $tag == "${search_term}"* ]]
+              then
+                # Print the details of the image being deleted
+                echo "Deleting:"
+                echo $repositoryName
+                echo $tag
+
+                # Remove carriage return characters from the tag a know issue with az cli tsv output
+                clean_tag=$(echo $tag | tr -d '\r')
+
+                # Delete the image with the tag
+                az acr repository delete --name $container_registry_name --image $repositoryName:$clean_tag --yes
+              fi
+            done
+          done
