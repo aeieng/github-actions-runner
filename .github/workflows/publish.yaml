@@ -57,7 +57,7 @@ jobs:
             --file ${{ inputs.docker_file_path }} .
 
       - name: Build/Push Latest Image
-        if: github.head_ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         uses: azure/cli@v2
         with:
           azcliversion: latest
