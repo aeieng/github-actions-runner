@@ -20,9 +20,8 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y postgresql-client-16 && \
     curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash - && \
-    sudo apt-get install -y nodejs \
-    node -v \
-    npm -v \
+    sudo apt-get install -y nodejs && \
+    node -v && npm -v && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
