@@ -6,7 +6,6 @@ USER root
 # install:
 # - curl, jq, Azure CLI, PostgreSQL client, and dnsutils
 # - unzip, nodejs with npm via nvm: used by hashicorp/setup-terraform
-# - docker: used by rstringer/manual-approval:1.9.1
 # Installs the rdbms-connect az-cli extension to allow az postgres flexible-server connect
 RUN apt-get update && \
     apt-get install -y curl jq apt-transport-https lsb-release gnupg dnsutils unzip && \
@@ -23,10 +22,6 @@ RUN apt-get update && \
     curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     node -v && npm -v && \
-    curl -fsSL https://get.docker.com | sh && \
-    systemctl is-active --quiet docker.service || systemctl start docker.service && \
-    systemctl is-enabled --quiet docker.service || systemctl enable docker.service && \
-    sleep 10 && docker info && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
