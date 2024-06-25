@@ -24,7 +24,9 @@ RUN apt-get update && \
     apt-get install -y nodejs && \
     node -v && npm -v && \
     curl -fsSL https://get.docker.com | sh && \
-    docker -v && \
+    systemctl is-active --quiet docker.service || systemctl start docker.service && \
+    systemctl is-enabled --quiet docker.service || systemctl enable docker.service && \
+    sleep 10 && docker info && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
